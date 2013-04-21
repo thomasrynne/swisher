@@ -1,0 +1,48 @@
+<%inherit file="base.html"/>
+
+<%block name="title">
+</%block>
+
+<%block name="header">
+</%block>
+
+<div style="clear: left"></div>
+<form action="/CardPrinter/createPDFx6" id="card-editors">
+  % for c in [1,3,5,2,4,6]:
+  <div class="card-editor">
+    <div  class="label">Find:</div>
+    <input id="card-${c}-title-input" type="text" name="card${c}title"/> <br>
+    <div class="label">Image url:</div>
+    <input id="card-${c}-cover-input" type="text" name="card${c}cover"/> <br>
+  </div>
+  % endfor %
+  <div id="print"><input type="submit" value="Print/Preview"/></div>
+</form>
+<div style="clear: both"></div>
+<div id="postcard">
+  % for c in [1,3,5]:
+  <div class="card">
+    <img id="card-${c}-cover" class="coverart" src=""/>
+    <img id="card-${c+1}-cover" class="coverart" src=""/>
+  </div>
+  % endfor %
+</div>
+
+<script>
+  % for c in [1,2,3,4,5,6]:
+  $('#card-${c}-title-input').autocomplete({
+    source: "/CardPrinter/autocomplete",
+    change: function( event, ui ) {
+        $.get("/CardPrinter/album", { name: $('#card-${c}-title-input').val() },
+        function(data) {
+            var d = JSON.parse(data)
+            $('#card-${c}-cover-input').val(d.image)
+        })
+    }
+  })
+  addListener($('#card-${c}-cover-input'), function(text) {
+    $('#card-${c}-cover').attr('src', text)
+  })
+  % endfor %
+</script>
+

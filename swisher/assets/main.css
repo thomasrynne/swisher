@@ -1,0 +1,199 @@
+#title {
+  float: left;
+  clear: left;
+  width: 6em;
+  height: 3em;
+  border: solid 4px purple	;
+  border-radius: 8pt;
+  margin-left: 1em;
+  padding: 3 px;
+  text-align: center;
+}
+.tab {
+  font-size: large;
+  margin: .5em;
+}
+body {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0;
+  max-width: 80em;
+}
+.header {
+  margin-top: 1em;
+  margin-bottom: 2em;
+  margin-left: auto;
+  margin-right: auto;
+  width: 45em;
+  max-width: 50em;
+  border: 2px solid black;
+  text-align: center;
+  clear: both;
+}
+#search {
+  margin-top: 2em;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 80%;
+}
+#searchbox {
+    font-size: large;
+}
+.image {
+  border: solid black 2px;
+  width: 250px;
+}
+
+.text {
+
+}
+
+.small {
+  font-size: small;
+}
+.small-button {
+  height: 50px;
+}
+.search-box {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table {
+  border-collapse: collapse;
+  cell-padding: 0;
+  margin: 0;
+}
+td {
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+input {
+    font-size: large;
+}
+textarea {
+    margin-left: auto;
+    margin-right:auto
+}
+.help {
+    max-width: 50em;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
+}
+#card-editors {
+  width: 70em;
+  height: 12em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3em;
+}
+.card-editor {
+  width: 20em;
+  float: left;
+  margin: 1em;
+  border: 2px solid black;
+}
+#postcard {
+  width: 720px;
+  height: 480px;
+  border: 3px solid black;
+  margin-left: auto;
+  margin-right: auto;
+}
+.card {
+  width: 238px;
+  float: left;
+  border-right: 1px dashed grey;
+}
+.coverart {
+  width: 238px;
+  height: 238px;
+}
+.card-title {
+  font-size: large;
+  text-align: center;
+  height: 50px;
+  border-bottom: 1px dashed grey;
+}
+.card-reverse {
+  height: 192px;
+  font-size: 8px;
+  white-space: pre;
+}
+#print {
+    width: 10em;
+    height: 4em;
+    margin-left: auto;
+    margin-right: auto;
+}
+.card-title {
+}
+.label {
+    float: left;
+    width: 5em;
+}
+textarea {
+    margin-left: 2em;
+    margin-right: auto;
+    width: 20em;
+}
+.card-editor input { float: left;}
+#list {
+    margin-top: 2em;
+    margin-left: 20%;
+}
+/*#status {
+    width: 90%;
+    max-width: 130em;
+}*/
+#reader {
+    width: 15em;
+}
+#mpd {
+    width: 15em;
+}
+.rotate {
+    transform:rotate(-90deg);
+    -o-transform:rotate(-90deg);
+    -moz-transform:rotate(-90deg);
+    -webkit-transform:rotate(-90deg);
+}
+.control-name {
+    border: solid 1px black;
+    float: left;
+    width: 7em;
+    font-style: italic;
+}
+.control-value {
+    border: solid 1px black;
+    margin-right: 1em;
+    float: left;
+}
+.button {
+    float: left;
+    width: 2em;
+    font-size: small;
+    margin: 0;
+}
+#controls {
+  margin-top: 1em;
+  margin-bottom: 2em;
+  margin-left: 12em;
+  width: 90%;
+  max-width: 130em;
+  text-align: center;
+}
+
+.child {
+    margin-left: 2em;
+    font-size: smaller;
+}
+.child input {
+    font-size: smaller;
+}
+#cards {
+  margin-left: 5em;
+}
