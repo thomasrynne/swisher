@@ -76,3 +76,9 @@ Optional  Configuration
  By default the swisher web server listens on 3344
  You can change this with the http-port property
 
+### Start on Boot
+
+    > sudo cp misc/init.d.swisher /etc/init.d/swisher
+    > sudo cp misc/swisher.conf /etc
+    > sudo update-rc.d swisher defaults
+
