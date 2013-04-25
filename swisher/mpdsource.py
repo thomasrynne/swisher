@@ -117,7 +117,7 @@ class MpdSource:
         for song in library:
             if 'title' in song:
                 track_key = self.clean(song.get('artist',''))+"/"+self.clean(song['title'])
-                tracks[track_key] = song
+                tracks[track_key] = (song['file'],song['title'])
                 if 'album' in song and song['album'] != "":
                     key = self.clean(song['album'])
                     if key not in albums:
@@ -153,7 +153,7 @@ class MpdSource:
         def create_children(tracks):
             return [ ActionRegistry(song['title']) for song in tracks]
         self.actions.register("track", "", self._track,
-         [ ActionRegistry(key, song['title']) for key,song in self.tracks.items()])
+         [ ActionRegistry(key, song[1]) for key,song in self.tracks.items()])
         self.actions.register("album", "Albums", self._album,
          [ ActionRegistry(key,albuminfo[0],albuminfo[1]) for key,albuminfo in self.albums.items()])
         self.actions.register("playlist", "Playlists", self._playlist,
@@ -188,9 +188,9 @@ class MpdSource:
             pass
 
     def _track(self, track_key):
-        song = self.tracks[track_key]
+        filename = self.tracks[track_key][0]
         self.client.clear()
-        self.client.add(song['file'])
+        self.client.add(filename)
         self.client.play()
     def _album(self, album_key):
         self.client.clear()
