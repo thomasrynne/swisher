@@ -22,7 +22,8 @@ class CardStore:
     fh = open(self.cardsFilename, 'a')
     fh.write(number + "=" + actionType + ":" + actionValue + "\n")
     fh.close()
-    self.actions[number] = (actionType, actionValue)
+    self.by_card_number[number] = (actionType, actionValue)
+    self.actions.append( (number, (actionType, actionParameter)) )
 
   def read(self, card):
     return self.by_card_number[card]

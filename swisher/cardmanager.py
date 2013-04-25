@@ -73,7 +73,7 @@ class CardManager:
     def on_card(card):
       try:
         if self.record_mode:
-          (action_type, action_value) = self.record_mode
+          (action_type, action_value, name) = self.record_mode
           self.card_store.store(card, action_type, action_value)
           self.record_mode = False
           self.notice()
