@@ -1,0 +1,12 @@
+<%inherit file="base.html"/>
+
+<div id="list">
+  % for code, name in actions:
+    <div>
+      <input type="button" value="&#x25B6;" title="Do now" onclick="action('action', '${code}')"/>
+      <input type="button" class="rotate" value="&#x21af;" title="Connect" onclick="record('action', '${code}', '${name}')"/>
+      ${name}
+    </div>
+  % endfor %
+</ul>
+

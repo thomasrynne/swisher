@@ -13,6 +13,24 @@ from reportlab.lib.colors import black, red, grey
 from reportlab.lib.utils import ImageReader
 from reportlab.pdfgen.canvas import Canvas
 
+import cherrypy
+
+class CardPrinterPage:
+    def __init__(self, context):
+        self._context = context
+
+    @cherrypy.expose
+    def index(self):
+        return self._context.render("printer-six.html","Card Printer")
+
+    @cherrypy.expose
+    def createPDFx6(self, card1cover, card2cover, card3cover,
+                        card4cover, card5cover, card6cover):
+        cherrypy.response.headers['Content-Type']= 'application/pdf'
+        return buildPDFx6(1,
+            [ card1cover, card2cover, card3cover,
+              card4cover, card5cover, card6cover])
+
 #creates a 6'x4' pdf containing the 6 images supplied in a 3x2 grid with margin
 def buildPDFx6(marginmm, urls):
     width = 6 * inch

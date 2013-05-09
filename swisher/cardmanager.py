@@ -1,7 +1,6 @@
 
 import logging
 import traceback
-from actions import ActionRegistry
 
 #handles card swipes
 # responsible for card recording and lock modes
@@ -13,10 +12,8 @@ class CardManager:
     self.locked = False
     self.record_mode = False
     self.device_count = 0
-    actions.register("cm", "Actions", self._handle_action,
-      [ ActionRegistry("lock", "Lock"),
-        ActionRegistry("unlock", "Unlock"),
-        ActionRegistry("cancelrecord", "Cancel Record")])
+    actions.registerAction("Lock", "lock", self.lock)
+    actions.registerAction("Unlock", "unlock", self.unlock)
 
   def notice(self):
     text = ""
@@ -37,9 +34,7 @@ class CardManager:
 
   #puts this manager into record mode, so the next card will be associated
   #with the action type and value provided
-  def record(self, action_type, action_value):
-    name = self.actions.lookup(action_type, action_value)
-    print name
+  def record(self, action_type, action_value, name):
     self.record_mode = (action_type, action_value, name)
     self.notice()
 
@@ -48,18 +43,12 @@ class CardManager:
     self.notice()
     self.alert("Record cancelled")
 
-  def _handle_action(self, value):
-    if value == "lock":
+  def lock(self):
       self.locked = True
       self.notice()
-    elif value == "unlock":
+  def unlock(self):
       self.locked = False
       self.notice()
-    elif value == "cancelrecord":
-      self.cancel_record()
-    else:
-      print "Unknown action: " + value
-
 
   def on_devices_change_f(self):
     def update_devices_count(n):

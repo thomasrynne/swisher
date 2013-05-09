@@ -1,0 +1,87 @@
+import mpd
+import urllib
+import thread
+import threading
+import signal
+import time
+import logging
+import traceback
+import cherrypy
+
+#Registers stop/pause/.. actions and keeps the mpd status up to date
+#Also exposes the play method for other classes
+class MpdPlayer:
+    def __init__(self, host, port, actions, notify):
+        self.host = host
+        self.port = port
+        self.actions = actions
+        self.notify = notify
+        self.notification = mpd.MPDClient(use_unicode=True)
+        self.notification.timeout = 3
+        self.notification.idletimeout = 60
+        self.client = mpd.MPDClient(use_unicode=True)
+        self.client.timeout = 3
+        self.add_static_actions()
+        self.cancel_connect = threading.Event()
+
+    def start(self):
+        self.cancel_connect.clear()
+        def _current_status():
+            song = self.notification.currentsong()
+            status = self.notification.status()
+            if status['state'] == 'stop':
+                return "Stopped"
+            elif status['state'] == 'pause':
+                return "Paused"
+            else:
+                return song.get("title", "")
+        def _keep_connected():
+           retry_count = 0
+           while not self.cancel_connect.is_set(): #reconnect loop
+               try:
+                   self.notification.connect(self.host, self.port)
+                   self.client.connect(self.host, self.port)
+                   retry_count = 0
+                   latest_status = ""
+                   while not self.cancel_connect.is_set(): #status loop
+                       current_status = _current_status()
+                       if latest_status != current_status:
+                           latest_status = current_status
+                           self.notify("mpd", latest_status)
+                       try:
+                           response = self.notification.idle()
+                       except:
+                           pass
+               except: #connect/reconnect failed
+                   #print traceback.format_exc()
+                   pass
+               #close connections to get in a consistent state
+               try:
+                   self.notification.disconnect()
+               except:
+                   pass
+               try:
+                   self.client.disconnect()
+               except:
+                   pass
+               if retry_count == 1: #Allow one retry before assuming MPD is down
+                   self.notify("mpd", "No MPD")
+               self.cancel_connect.wait(min(retry_count*3,20)) #reconnect inverval
+               retry_count = retry_count + 1
+        thread.start_new_thread(_keep_connected, ())
+    def stop(self):
+        self.cancel_connect.set()
+        self.notification.noidle()
+
+    def add_static_actions(self):
+        self.actions.registerAction("Stop", "mpd.stop", self.client.stop)
+        self.actions.registerAction("Pause", "mpd.pause", self.client.pause)
+        self.actions.registerAction("Next", "mpd.next", self.client.next)
+        self.actions.registerAction("Previous", "mpd.previous", self.client.previous)
+
+    def play(self, urlorpath):
+        self.client.stop()
+        self.client.clear()
+        self.client.add(urlorpath)
+        self.client.play()
+

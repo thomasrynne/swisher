@@ -13,9 +13,9 @@ class CardStore:
       for line in fh:
         number = line[:line.find("=")]
         actionType = line[line.find("=")+1:line.find(":")]
-        actionParameter = line[line.find(":")+1:].strip()
-        self.actions.append( (number, (actionType, actionParameter)) )
-        self.by_card_number[number] = (actionType, actionParameter)
+        actionValue = line[line.find(":")+1:].strip()
+        self.actions.append( (number, (actionType, actionValue)) )
+        self.by_card_number[number] = (actionType, actionValue)
       fh.close()
 
   def store(self, number, actionType, actionValue):
@@ -23,7 +23,7 @@ class CardStore:
     fh.write(number + "=" + actionType + ":" + actionValue + "\n")
     fh.close()
     self.by_card_number[number] = (actionType, actionValue)
-    self.actions.append( (number, (actionType, actionParameter)) )
+    self.actions.append( (number, (actionType, actionValue)) )
 
   def read(self, card):
     return self.by_card_number[card]

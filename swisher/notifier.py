@@ -30,8 +30,10 @@ class Notifier:
     def next_status(self, current):
         if not self.running.is_set():
             return { "stopping": True }
-        my_value = self.status()
+        full_status = self.status()
+        my_value = {k: full_status.get(k, "") for k in current}
         if current != my_value:
+            print my_value
             return { "action": "update", "state": my_value}
         else:
             r = self.event.wait(30) #long poll timeout

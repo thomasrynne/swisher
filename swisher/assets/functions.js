@@ -1,9 +1,13 @@
 function action(prefix, value) {
-  jQuery.post("/Action/invoke?prefix="+prefix + "&value=" + value)
+  jQuery.post("/action/invoke", { prefix: prefix, value: value})
 }
 
-function record(prefix, value) {
-  jQuery.post("/Action/record?prefix="+prefix + "&value=" + value)
+function record(prefix, value, name) {
+  jQuery.post("/action/record", { prefix: prefix, value: value, name: name})
+}
+
+function cancelRecord() {
+  jQuery.post("/action/cancelrecord")
 }
 
 function addListener(elem, callback) {
@@ -28,8 +32,13 @@ function showDisconnected() {
         $("#"+key).html("--")
     })
 }
+function startLongPoll(keys) {
+    $.each(keys, function(i, key) {
+      current[key]= ""
+    })
+    longPoll()
+}
 function longPoll() {
-    console.log(current)
     $.ajax({
         type: "POST",
         url: "http://" + hostname + "/longPoll/status",

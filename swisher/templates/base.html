@@ -12,19 +12,23 @@
   <%
     import cherrypy
     urlx = cherrypy.url().replace("http://", "")
-    path = urlx[urlx.find('/')+1:-1]
+    path = urlx[urlx.find('/')+1:]
+    if path.endswith("/"):
+        path = path[:-1]
+    status_as_js_array = "[" + ", ".join([ "'"+str(s)+"'" for s in status]) + "]"
+    
   %>
     <img id="title" src="/assets/logo.png" alt="Swisher"/>
     <div id="controls">
       <span  class="control-name">Card Reader:</span>
-      <input class="button" type="button" title="Cancel Record" value="X" onclick="action('cm', 'cancelrecord')"/>
+      <input class="button" type="button" title="Cancel Record" value="X" onclick="cancelRecord()"/>
       <span class="control-value" id="reader"></span>
 
       <span  class="control-name">Player:</span>
-      <input class="button" type="button" title="Previous" value="|&#x25C0;" onclick="action('player', 'previous')"/>
-      <input class="button" type="button" title="Stop"     value="&#x25A0;" onclick="action('player', 'stop')"/>
-      <input class="button" type="button" title="Pause"    value="||"       onclick="action('player', 'pause')"/>
-      <input class="button" type="button" title="Next"     value="&#x25B6;|" onclick="action('player', 'next')"/>
+      <input class="button" type="button" title="Previous" value="|&#x25C0;" onclick="action('action', 'mpd.previous')"/>
+      <input class="button" type="button" title="Stop"     value="&#x25A0;" onclick="action('action', 'mpd.stop')"/>
+      <input class="button" type="button" title="Pause"    value="||"       onclick="action('action', 'mpd.pause')"/>
+      <input class="button" type="button" title="Next"     value="&#x25B6;|" onclick="action('action', 'mpd.next')"/>
       <span class="control-value" id="mpd"></span>
 
       <span class="control-value" id="status"></span>
@@ -50,7 +54,7 @@
     ${self.body()}
     </div>
     <script>
-       longPoll() 
+       startLongPoll(${status_as_js_array}) 
     </script>
   </body>
 </html>
