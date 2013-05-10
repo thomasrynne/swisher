@@ -104,10 +104,11 @@ class SearchPage:
     @cherrypy.expose
     def index(self, search=""):
         results = []
-        for r in self._mpdsource.search_titles(search):
-            results.append( r )
-        for a in self._mpdsource.search_albums(search):
-            results.append( a )
+        if search != "":
+            for r in self._mpdsource.search_titles(search):
+                results.append( r )
+            for a in self._mpdsource.search_albums(search):
+                results.append( a )
         return self._context.render("search.html", "Search", search=search, results=results)
 
 
