@@ -50,16 +50,11 @@ class CardManager:
       self.locked = False
       self.notice()
 
-  def on_devices_change_f(self):
-    def update_devices_count(n):
+  def update_devices_count(self, n):
       self.device_count = n
       self.notice()
-    return update_devices_count
 
-  #returns the function to use for handling card events
-  #the function returned expectes a single string of the card number
-  def on_card_f(self):
-    def on_card(card):
+  def on_card(self, card):
       try:
         if self.record_mode:
           (action_type, action_value, name) = self.record_mode
@@ -68,10 +63,11 @@ class CardManager:
           self.notice()
           self.alert("Card recorded")
         else:
-          if card not in self.card_store.by_card_number:
+          result = self.card_store.lookup_card(card)
+          if not result:
             self.alert("Unknown card: " + card)
           else:
-            (actionType, actionValue) = self.card_store.by_card_number[card]
+            (actionType, actionValue) = result
             if self.locked and actionType != "action" and actionValue != "unlock":
               self.alert("Ignoring...locked")
             else:
@@ -79,4 +75,3 @@ class CardManager:
       except:
         print traceback.format_exc()
         logging.exception("card event handling failed")
-    return on_card

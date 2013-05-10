@@ -16,13 +16,13 @@ import printer
 class Server:
     def __init__(self, resources_path, cardsfile, log, grab_device, mpdhost, mpdport, http_port):
         self.notifier = notifier.Notifier()
-        self.card_store = cards.CardStore(cardsfile)
+        self.card_store = cards.CardStore(cardsfile, True)
         self.actions = actions.Actions()
         self.card_manager = cardmanager.CardManager(self.card_store, self.actions, self.notifier.notify)
         self.card_reader = cardreader.CardReader(
             grab_device,
-            self.card_manager.on_card_f(),
-            self.card_manager.on_devices_change_f()
+            self.card_manager.on_card,
+            self.card_manager.update_devices_count
         )
         self.mpdplayer = mpdplayer.MpdPlayer(mpdhost, mpdport, self.actions, self.notifier.notify)
         self.mpdsource = mpdsource.MpdSource(self.actions, self.mpdplayer.client)
