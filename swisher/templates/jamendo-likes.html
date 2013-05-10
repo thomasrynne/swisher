@@ -1,0 +1,11 @@
+<%inherit file="base.html"/>
+
+<div id="cards">
+  % for trackid, name, artist in tracks:
+    <div>
+        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-track', '${trackid}')"/>
+        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-track', '${trackid}'. ${name})"/>
+        ${name} (${artist})</div>
+  % endfor %
+</div>
+

@@ -82,3 +82,11 @@ Optional  Configuration
     > sudo cp misc/swisher.conf /etc
     > sudo update-rc.d swisher defaults
 
+### Jamendo
+
+ [Jamendo](http://www.jamendo.com) hosts free music for personal use.
+ If you set the value jamendo-username: in the configuration file
+ Jamendo pages are added to the swisher web page and you can 
+ associate cards with tracks on Jamendo and Jamendo radio stations
+ Follow the li 
+

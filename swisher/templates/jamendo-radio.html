@@ -1,0 +1,11 @@
+<%inherit file="base.html"/>
+
+<div id="cards">
+  % for code, name in radios:
+    <div>
+        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-radio', '${code}')"/>
+        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-radio', '${code}', '${name}')"/>
+        ${name}</div>
+  % endfor %
+</div>
+

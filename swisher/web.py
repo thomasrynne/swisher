@@ -92,9 +92,9 @@ class Web:
     self.root.action = ActionPage(self.actions, self.card_manager)
     self.root.action.exposed = True
     self.root.longPoll = LongPollStatus(notifier)
-    for name, page in pages.items():
+    for name, page in pages:
         self.context.add_page(name)
-        self.root.add_page(name, page(self.context))
+        self.root.add_page(name.replace(" ", ""), page(self.context))
 
   def start(self):
     thread.start_new_thread(self._run, ())
