@@ -79,9 +79,13 @@ class MpdPlayer:
         self.actions.registerAction("Next", "mpd.next", self.client.next)
         self.actions.registerAction("Previous", "mpd.previous", self.client.previous)
 
-    def play(self, urlorpath):
+    def play_all(self, urlorpaths):
         self.client.stop()
         self.client.clear()
-        self.client.add(urlorpath)
+        for item in urlorpaths:
+            self.client.add(item)
         self.client.play()
+
+    def play(self, urlorpath):
+        self.play_all([urlorpath])
 

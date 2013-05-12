@@ -1,16 +1,26 @@
 <%inherit file="base.html"/>
 
 <form id="search">
-  <p>Search by track name</p>
+  <p>Search by album or track name</p>
   <input id="searchbox" type="text" value="${search}" name="search" autofocus="true">
   <input type="submit" value="Search">
 </form>
 
 <div id="cards">
-  % for trackid, name, artist in tracks:
+<h2>Albums</h2>
+  % for id, name, artist in albums:
     <div>
-        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-track', '${trackid}')"/>
-        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-track', '${trackid}', '${name}')"/>
-        ${name} (${artist})</div>
+        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-album', '${id}')"/>
+        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-album', '${id}', '${name}')"/>
+        ${name} [${artist}]
+    </div>
+  % endfor %
+<h2>Tracks</h2>
+  % for id, name, artist in tracks:
+    <div>
+        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-track', '${id}')"/>
+        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-track', '${id}', '${name}')"/>
+        ${name} [${artist}]
+    </div>
   % endfor %
 </div>
