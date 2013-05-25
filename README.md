@@ -16,7 +16,7 @@ Hardware Requirements
 
 Software Dependencies
 ---------------------
-- MPD - Swisher is an [mpd](http://mpd.wikia.com) client so you need a working mpd installation first
+- MPD/Mopidy - Swisher is an [mpd](http://mpd.wikia.com) client so you need a working mpd installation first. It also works with [Mopidy](http://www.mopidy.com/) an alternative mpd server which plays music from multiple sources.
 - evdev - a linux kernel module which is usually already present
    (check you have the directory /dev/input)
 
