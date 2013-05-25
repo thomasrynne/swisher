@@ -1,6 +1,5 @@
 import httplib
 import json
-import music
 import cherrypy
 import thread
 import urllib
