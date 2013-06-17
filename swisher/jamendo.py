@@ -5,39 +5,42 @@ import thread
 import urllib
 
 #Adds actions for the Jamendo radio stations and tracks
-#Adds pages for search, Jamendo Radios and user's likes
-class Jamendo:
-    def __init__(self, player, actions, username):
-        self.clientID = "6154a905"
-        self.username = username
-        self.player = player
+class JamendoActionHandler:
+    def __init__(self, player, actions, jamapi):
         actions.register("jamendo-radio", self.play_radio)
         actions.register("jamendo-track", self.play_track)
         actions.register("jamendo-album", self.play_album)
+        self.player = player
+        self.jamapi = jamapi
 
     def play_radio(self, code):
-        stream = self.request("radios/stream", name=code)[0]["stream"]
+        stream = self.jamapi.request("radios/stream", name=code)[0]["stream"]
         self.player.play(stream)
 
     def play_track(self, trackid):
-        self.player.play(self._track_url(trackid))
-
-    def _track_url(self, trackid):
-        return "http://api.jamendo.com/v3.0/tracks/file?client_id=" + self.clientID + "&id=" + trackid
+        self.player.play(self.jamapi.track_url(trackid))
 
     def play_album(self, albumid):
         track_urls = []
-        for track in self.requestOne("albums/tracks", id=albumid)["tracks"]:
-            track_urls.append( self._track_url(track["id"]) )
+        for track in self.jamapi.requestOne("albums/tracks", id=albumid)["tracks"]:
+            track_urls.append( self.jamapi.track_url(track["id"]) )
         self.player.play_all(track_urls)
+
+
+class JamendoApi:
+    def __init__(self, clientID):
+        self.clientID = clientID
+
+    def track_url(self, trackid):
+        return "http://api.jamendo.com/v3.0/tracks/file?client_id=" + self.clientID + "&id=" + trackid
 
     def list_radios(self):
         result = self.request("radios")
         for entry in result:
             yield (entry["name"], entry["dispname"])
 
-    def list_mytracks(self):
-        userid = self.requestOne("users", name=self.username)["id"]
+    def list_mytracks(self, username):
+        userid = self.requestOne("users", name=username)["id"]
         result = self.request("users/tracks", id=userid, limit=50)
         artist_cache = {}
         def artist_name(artistid):
@@ -70,12 +73,7 @@ class Jamendo:
         connection.request("GET", url)
         response = connection.getresponse()
         data = response.read()
-        print url
-        print data[2410:2420]
-        print data
         j = json.loads(data)
-        print "OO"
-        print j	
         connection.close()
         results = j["results"]
         return results
@@ -90,13 +88,19 @@ class RadioPage:
         radios=self.jamendo.list_radios())
 
 class LikesPage:
-  def __init__(self, context, jamendo):
+  def __init__(self, context, jamendo, default_user):
     self.context = context
     self.jamendo = jamendo
+    self.default_user = default_user
   @cherrypy.expose
-  def index(self):
-    return self.context.render("jamendo-likes.html", "Jamendo Likes",
-        tracks=self.jamendo.list_mytracks())
+  def index(self, username=""):
+    if username=="":
+        username = self.default_user
+    if username=="":
+        mytracks = []
+    else:
+        mytracks = self.jamendo.list_mytracks(username)
+    return self.context.render("jamendo-likes.html", "Jamendo Likes", tracks=mytracks, username=username)
 
 class SearchPage:
   def __init__(self, context, jamendo):

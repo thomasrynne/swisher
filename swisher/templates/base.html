@@ -3,10 +3,10 @@
     <title>Swisher: ${title}</title>
     <link rel="icon" type="image/png" href="/assets/icon.png">
     <script src="/assets/jquery-1.7.1.min.js"> </script>
-    <script src="/assets/jquery-ui-1.10.0.custom.min.js"></script>
-    <script src="/assets/functions.js"> </script>
+    % for script in scripts:
+    <script src="/assets/${script}"> </script>
+    % endfor
     <link rel="stylesheet" type="text/css" href="/assets/main.css"/>
-    <link rel="stylesheet" type="text/css" href="/assets/jquery-ui-1.10.0.custom.min.css"/>
   </head>
   <body>
   <%
@@ -14,22 +14,20 @@
     urlx = cherrypy.url().replace("http://", "")
     path = urlx[urlx.find('/')+1:]
     if path.endswith("/"):
-        path = path[:-1]
-    status_as_js_array = "[" + ", ".join([ "'"+str(s)+"'" for s in status]) + "]"
-    
+        path = path[:-1]    
   %>
     <img id="title" src="/assets/logo.png" alt="Swisher"/>
     <div id="controls">
       <span  class="control-name">Card Reader:</span>
       <input class="button" type="button" title="Cancel Record" value="X" onclick="cancelRecord()"/>
-      <span class="control-value" id="reader"></span>
+      <span class="control-value" id="reader">&nbsp;</span>
 
       <span  class="control-name">Player:</span>
       <input class="button" type="button" title="Previous" value="|&#x25C0;" onclick="action('action', 'mpd.previous')"/>
       <input class="button" type="button" title="Stop"     value="&#x25A0;" onclick="action('action', 'mpd.stop')"/>
       <input class="button" type="button" title="Pause"    value="||"       onclick="action('action', 'mpd.pause')"/>
       <input class="button" type="button" title="Next"     value="&#x25B6;|" onclick="action('action', 'mpd.next')"/>
-      <span class="control-value" id="mpd"></span>
+      <span class="control-value" id="mpd">&nbsp;</span>
 
       <span class="control-value" id="status"></span>
     </div>
@@ -38,6 +36,7 @@
       % for tab in tabs:
       <%
         taburl = tab.replace(" ", "")
+        tab = tab.replace(" ", "&nbsp;")
         if tab == "Search":
           taburl = ""
       %>
@@ -53,8 +52,5 @@
     <div class="body">
     ${self.body()}
     </div>
-    <script>
-       startLongPoll(${status_as_js_array}) 
-    </script>
   </body>
 </html>

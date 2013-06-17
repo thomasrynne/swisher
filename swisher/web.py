@@ -5,17 +5,15 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 from cherrypy.lib.static import serve_file
 import os.path
-import printer
 import thread
 import time
 import Queue
 import json
 
 class RootPage:
-  def __init__(self, dir, context, actions):
+  def __init__(self, dir, context):
       self.dir = dir
       self._context = context
-      self._actions = actions
 
   @cherrypy.expose
   def index(self):
@@ -29,10 +27,9 @@ class RootPage:
       return serve_file(os.path.abspath(self.dir + "/assets/" + name))
 
 class CardsPage:
-  def __init__(self, context, card_store, actions):
+  def __init__(self, context, card_store):
     self.context = context
     self.card_store = card_store
-    self.actions = actions
   @cherrypy.expose
   def index(self):
     return self.context.render("cards.html", "Cards",
@@ -66,12 +63,13 @@ class LongPollStatus:
         return json.dumps(changed_status)
 
 class WebContext:
-    def __init__(self, template):
+    def __init__(self, template, scripts):
         self._template = template
-        self._pages = []
-    def render(self, template_name, title, status=[], **others):
+        self._scripts = scripts
+        self._pages = [ "Home" ]
+    def render(self, template_name, title, **others):
         t = self.get_template(template_name)
-        return t.render(title=title, tabs=self.tabs(), status=["mpd", "reader"] + status, **others)
+        return t.render(title=title, tabs=self.tabs(), scripts=self._scripts, **others)
     def get_template(self, name):
         return self._template.get_template(name)
     def add_page(self, name):
@@ -80,25 +78,19 @@ class WebContext:
         return self._pages
 
 class Web:
-  def __init__(self, dir, logfile, port, actions, card_store, card_manager, notifier, pages):
+  def __init__(self, dir, logfile, port, scripts, pages):
     self.dir= dir
     self.logfile = logfile
     self.port = port
-    self.context = WebContext(TemplateLookup(directories=[dir+'/templates']))
-    self.actions = actions
-    self.card_store = card_store
-    self.card_manager = card_manager
-    self.root = RootPage(dir, self.context, self.actions)
-    self.root.action = ActionPage(self.actions, self.card_manager)
-    self.root.action.exposed = True
-    self.root.longPoll = LongPollStatus(notifier)
+    self.context = WebContext(TemplateLookup(directories=[dir+'/templates']), scripts)
+    self.root = RootPage(dir, self.context)
     for name, page in pages:
         self.context.add_page(name)
         self.root.add_page(name.replace(" ", ""), page(self.context))
 
   def start(self):
-    thread.start_new_thread(self._run, ())
-  def _run(self):
+    thread.start_new_thread(self.run, ())
+  def run(self):
     cherrypy.quickstart(self.root, config={
         'global': {
           'environment': 'production',

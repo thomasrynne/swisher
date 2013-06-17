@@ -17,10 +17,10 @@ class MpdPlayer:
         self.actions = actions
         self.notify = notify
         self.notification = mpd.MPDClient(use_unicode=True)
-        self.notification.timeout = 3
+        self.notification.timeout = 15
         self.notification.idletimeout = 60
         self.client = mpd.MPDClient(use_unicode=True)
-        self.client.timeout = 3
+        self.client.timeout = 15
         self.add_static_actions()
         self.cancel_connect = threading.Event()
 

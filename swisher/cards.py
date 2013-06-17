@@ -49,12 +49,12 @@ class CardStore:
   def _remote_store(self, number, actionType, actionValue):
     json_value = json.dumps( {"type":actionType, "value":actionValue} )
     data = urllib.urlencode({'cardnumber' : number, 'value' : json_value })
-    request = urllib2.Request('http://swisher.herokuapp.com/store', data)
+    request = urllib2.Request('http://swisher.herokuapp.com/cardservice/store', data)
     response = urllib2.urlopen(request)
 
   def _remote_lookup(self, number):
     connection = httplib.HTTPConnection("swisher.herokuapp.com")
-    connection.request("GET", "/read?cardnumber="+number)
+    connection.request("GET", "/cardservice/read?cardnumber="+number)
     response = connection.getresponse()
     print str(response.status)
     if response.status != 200:
