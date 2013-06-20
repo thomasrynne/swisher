@@ -35,20 +35,20 @@ class CardsPage:
     return self.context.render("cards.html", "Cards",
         cards=self.cards_with_name())
   def cards_with_name(self):
-    for number, action in self.card_store.cards():
+    for number, datetime, value in self.card_store.cards():
       name = "Unknown"
-      yield (number, action[0], action[1], name)
+      yield (number, datetime, json.dumps(value))
 
 class ActionPage:
   def __init__(self, actions, card_manager):
     self._actions = actions
     self._card_manager = card_manager
   @cherrypy.expose
-  def invoke(self, prefix=None, value=None):
-    self._actions.invoke(prefix, value)
+  def invoke(self, value=None):
+    self._actions.invoke(json.loads(value))
   @cherrypy.expose
-  def record(self, prefix=None, value=None, name=None):
-    self._card_manager.record(prefix, value, name)
+  def record(self, value=None, name=None):
+    self._card_manager.record(json.loads(value), name)
   @cherrypy.expose
   def cancelrecord(self):
     self._card_manager.cancel_record()

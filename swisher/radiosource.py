@@ -1,9 +1,9 @@
 import cherrypy
 import urllib
+import json
 
 class RadioSource:
-    def __init__(self, actions, mpdplayer):
-        actions.register("radio", self._play_radio)
+    def __init__(self, mpdplayer):
         self._mpdplayer = mpdplayer
         self._radiourls = { #hard coded list for now, should find radio stream service
             "bbc4": ("BBC Radio 4", "http://www.bbc.co.uk/radio/listen/live/r4_aaclca.pls"),
@@ -16,7 +16,13 @@ class RadioSource:
 
     def radios(self):
         for code, value in self._radiourls.items():
-            yield (code, value[0])
+            yield ({"_radio": code}, value[0])
+
+    def play_radio(self, value):
+        radio_code = value.get("_radio")
+        if radio_code:
+            self._play_radio(radio_code)
+        return radio_code
 
     def _play_radio(self, code):
         url = self._radiourls [code][1]

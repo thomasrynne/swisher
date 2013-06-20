@@ -1,10 +1,10 @@
 <%inherit file="base.html"/>
 
 <div id="cards">
-  % for card, actionType, actionValue, name in cards:
+  % for card, value in cards:
     <div>
-      <input type="button" value="&#x25B6;" title="Play now" onclick="action('${actionType}', '${actionValue}')"/>
-      [${card}] ${name}</div>
+      <input type="button" value="&#x25B6;" title="Play now" onclick="action('${value}')"/>
+      [${card}] ${value}</div>
   % endfor %
 </ul>
 

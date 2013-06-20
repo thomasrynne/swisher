@@ -1,4 +1,5 @@
 <%inherit file="base.html"/>
+<%namespace name="defs" file="defs.html"/>
 
 <form id="search">
   <p>Search by album or track name</p>
@@ -8,19 +9,11 @@
 
 <div id="cards">
 <h2>Albums</h2>
-  % for id, name, artist in albums:
-    <div>
-        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-album', '${id}')"/>
-        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-album', '${id}', '${name}')"/>
-        ${name} [${artist}]
-    </div>
+  % for value, name, longname in albums:
+    ${defs.play_div(value, name, longname)}
   % endfor %
 <h2>Tracks</h2>
-  % for id, name, artist in tracks:
-    <div>
-        <input type="button" value="&#x25B6;" title="Play now" onclick="action('jamendo-track', '${id}')"/>
-        <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('jamendo-track', '${id}', '${name}')"/>
-        ${name} [${artist}]
-    </div>
+  % for value, name, longname in tracks:
+    ${defs.play_div(value, name, longname)}
   % endfor %
 </div>

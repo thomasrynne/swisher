@@ -7,30 +7,41 @@ import time
 import logging
 import traceback
 import cherrypy
-
-class Track:
-    def __init__(self, key, filename, name):
-        self._key = key
-        self._filename = filename
-        self._name = name
-    def prefix(self):
-        return "track"
-    def name(self):
-        return self._name
-    def filename(self):
-        return self._filename
-    def value(self):
-        return self._key
+import json
 
 class MpdSource:
-    def __init__(self, actions, client):
-        actions.register("track", self._play_track)
-        actions.register("album", self._play_album)
+    def __init__(self, client):
         self._client = client
+
+    def handlers(self): return [self.handle_mpd_uri, self.handle_mpd_album, self.handle_mpd_playlist]
+    def handle_mpd_uri(self, value):
+        mpduri = value.get("_mpd_uri")
+        if mpduri:
+            self._play_track(mpduri)
+        print("PLAY ", mpduri, value)
+        return mpduri
+    def handle_mpd_album(self, value):
+        albumkey = value.get("_mpd_album")
+        if albumkey:
+            self._play_album(albumkey)
+        return albumkey
+    def handle_mpd_playlist(self, value):
+        playlist = value.get("_mpd_playlist")
+        if playlist:
+            self._play_playlist(playlist)
+        return playlist
+
+    def enrich_track(self, value):
+        (track_name, artist) = (value.get("track_name"), value.get("artist"))
+        if track_name and artist:
+            songs = self._client.search("title", track_name, "artist", artist)
+            if len(songs) > 0:
+                return {"_mpd_uri": songs[0]["file"]}
+        return False
 
     def search_titles(self, text):
         for song in self._client.search("title", text):
-            yield TrackAction(song["file"], song["title"], song.get("artist", ""))
+            yield TrackAction(song["file"], song["title"], song.get("artist", ""), song.get("time"))
     def search_albums(self, text):
         albums = {}
         for song in self._client.search("album", text):
@@ -39,7 +50,9 @@ class MpdSource:
                 key = (song["artist"], album)
                 if key not in albums:
                     albums[key] = []
-                albums[key].append(TrackAction(song["file"], song.get("title", "??"), song.get("artist", "")))
+                albums[key].append(TrackAction(
+                  song["file"], song.get("title", "??"),
+                  song.get("artist", ""), song.get("time")))
         for key, tracks in albums.items():
             (artist, album) = key
             yield AlbumAction(artist, album, tracks)
@@ -59,20 +72,19 @@ class MpdSource:
             self._client.add(song["file"])
         self._client.play()
 
-    def _playlist(self, name):
+    def _play_playlist(self, name):
         self._client.clear()
         self._client.load(name)
         self._client.play()
 
 class TrackAction():
-    def __init__(self, url, track, artist):
+    def __init__(self, url, track, artist, duration):
         self._url = url
         self._track = track
         self._artist = artist
-    def prefix(self):
-        return "track"
-    def code(self):
-        return self._url
+        self._duration = duration
+    def value(self):
+        return { "_mpd_uri": self._url, "track_name": self._track, "artist": self._artist, "duration":self._duration }
     def shortname(self):
         return self._track
     def longname(self):
@@ -85,10 +97,8 @@ class AlbumAction():
         self._artist = artist
         self._title = title
         self._tracks = tracks
-    def prefix(self):
-        return "album"
-    def code(self):
-        return self._artist + "/" + self._title
+    def value(self):
+        return {"artist": self._artist, "album":self._title, "_mpd_album": self._artist + "/" + self._title}
     def shortname(self):
         return self._title
     def longname(self):

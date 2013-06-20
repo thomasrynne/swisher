@@ -1,12 +1,9 @@
 <%inherit file="base.html"/>
+<%namespace name="defs" file="defs.html"/>
 
 <div id="list">
   % for (code, name) in radios:
-    <div>
-      <input type="button" value="&#x25B6;" title="Play now" onclick="action('radio', '${code}')"/>
-      <input type="button" class="rotate" value="&#x21af;" title="Record" onclick="record('radio', '${code}', '${name}')"/>
-      ${name}
-    </div>
+    ${defs.play_div(code, name, name)}
   % endfor %
-</ul>
+</div>
 

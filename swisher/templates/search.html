@@ -1,14 +1,6 @@
 <%inherit file="base.html"/>
-<% 
-    import json
-    def escape(text):
-        return text.replace("'", r"\'")
-    def action(prefix, code):
-        return "action('"+escape(prefix)+"', '" + escape(code) + "')"
-    def record(prefix, code, name):
-        return "record('"+escape(prefix)+"', '" + escape(code) + "', '" + escape(name) + "')"
+<%namespace name="defs" file="defs.html"/>
 
- %>
 <form id="search">
   <p>Search by track or album title</p>
   <input id="searchbox" type="text" value="${search}" name="search" autofocus="true">
@@ -19,16 +11,10 @@
   <div id="list">
 % for item in results:
   <div>
-    <input type="button" value="&#x25B6;" title="Play now" onclick="${action(item.prefix(), item.code())}"/>
-    <input type="button" class="rotate" value="&#x21af;" title="Record"
-      onclick="${record(item.prefix(), item.code(), item.shortname())}" '${item.shortname()}')"/>
-    ${item.longname()}
+    ${defs.play_div(item.value(), item.shortname(), item.longname())}
     % for child in item.children():
       <div class="child">
-        <input type="button" value="&#x25B6;" title="Play now" onclick="${action(child.prefix(), child.code())}"/>
-        <input type="button" class="rotate" value="&#x21af;" title="Record"
-            onclick="${record(child.prefix(), child.code(), child.shortname())}"/>
-        ${child.shortname()}
+        ${defs.play_div(child.value(), child.shortname(), child.shortname())}
       </div>
     % endfor
   </div>

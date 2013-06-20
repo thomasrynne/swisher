@@ -17,48 +17,60 @@ import jamendo
 class Server:
     def __init__(self, resources_path, cardsfile, log, grab_device, mpdhost, mpdport,
       http_port, jamendo_clientid, jamendo_username, use_cardservice):
+        print("1", use_cardservice)
         self.notifier = notifier.Notifier()
-        self.card_store = cards.CardStore(cardsfile, use_cardservice)
-        self.actions = actions.Actions()
-        self.card_manager = cardmanager.CardManager(self.card_store, self.actions, self.notifier.notify)
-        self.card_reader = cardreader.CardReader(
-            grab_device,
-            self.card_manager.on_card,
-            self.card_manager.update_devices_count
-        )
-        self.mpdplayer = mpdplayer.MpdPlayer(mpdhost, mpdport, self.actions, self.notifier.notify)
-        self.mpdsource = mpdsource.MpdSource(self.actions, self.mpdplayer.client)
-        radios = radiosource.RadioSource(self.actions, self.mpdplayer)
-        self.shell = shell.Shell(self.actions)
+        self.cardstore = cards.CardStore(cardsfile, use_cardservice)
+        self.mpdplayer = mpdplayer.MpdPlayer(mpdhost, mpdport, self.notifier.notify)
+        self.mpdsource = mpdsource.MpdSource(self.mpdplayer.client)
+        radios = radiosource.RadioSource(self.mpdplayer)
+        self.shell = shell.Shell()
 
-        pages = [
-            ("Cards", lambda c: web.CardsPage(c, self.card_store)),
+        handlers = self.mpdsource.handlers() + [radios.play_radio]
+        enrichers = [self.mpdsource.enrich_track]
+        pages = []
+
+        if jamendo_clientid:
+            jamapi = jamendo.JamendoApi(jamendo_clientid)
+            handler = jamendo.JamendoActionHandler(self.mpdplayer, jamapi)
+            pages += [
+                ("Jamendo Search", lambda c: jamendo.SearchPage(c, jamapi)),
+                ("Jamendo Radio", lambda c: jamendo.RadioPage(c, jamapi)),
+                ("Jamendo Likes", lambda c: jamendo.LikesPage(c, jamapi, jamendo_username)),
+            ]
+            handlers += handler.handlers()
+            enrichers += handler.enrichers()
+
+        self.actions = actions.Actions(self.cardstore, 
+          handlers,
+          enrichers,
+          self.mpdplayer.actions() + self.shell.actions())
+        self.cardmanager = cardmanager.CardManager(self.cardstore, self.actions, self.notifier.notify)
+        self.cardreader = cardreader.CardReader(
+            grab_device,
+            self.cardmanager.on_card,
+            self.cardmanager.update_devices_count
+        )
+
+        pages += [
+            ("Cards", lambda c: web.CardsPage(c, self.cardstore)),
             ("Mpd", lambda c: mpdsource.SearchPage(c, self.mpdsource)),
             ("Radio", lambda c: radiosource.RadioPage(c, radios)),
             ("Actions", lambda c: actions.ActionsPage(c, self.actions)),
             ("CardPrinter", lambda c: printer.CardPrinterPage(c))
         ]
-        if jamendo_clientid:
-            jamapi = jamendo.JamendoApi(jamendo_clientid)
-            handler = jamendo.JamendoActionHandler(self.mpdplayer, self.actions, jamapi)
-            pages = pages + [
-                ("Jamendo Search", lambda c: jamendo.SearchPage(c, jamapi)),
-                ("Jamendo Radio", lambda c: jamendo.RadioPage(c, jamapi)),
-                ("Jamendo Likes", lambda c: jamendo.LikesPage(c, jamapi, jamendo_username)),
-            ]
         self.web = web.Web(resources_path, log, http_port, ["box-functions.js"], pages)
         self.web.root.longPoll = web.LongPollStatus(self.notifier)
-        self.web.root.action = web.ActionPage(self.actions, self.card_manager)
+        self.web.root.action = web.ActionPage(self.actions, self.cardmanager)
         self.web.root.action.exposed = True
 
     def start(self):
         self.mpdplayer.start()
-        self.card_reader.start()
+        self.cardreader.start()
         self.web.start()
     def stop(self):
         cherrypy.log("Stopping swisher", severity=logging.INFO)
         self.notifier.stop()
         self.web.stop()
-        self.card_reader.stop()
+        self.cardreader.stop()
         self.mpdplayer.stop()
 

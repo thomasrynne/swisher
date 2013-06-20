@@ -1,0 +1,28 @@
+
+ <%!
+    import json
+    def escape(text):
+        return json.dumps(text).replace("'", r"&#39;")
+    def actionJS(value):
+        return "action(" + escape(value) + ")"
+    def recordJS(value, name):
+        return "record(" + escape(value) + ", " + escape(name) + ")"
+  %>
+
+<%def name="play_div(value, name, longname)">
+  <div>
+    ${play_entry(value, name, longname)}
+  </div>
+</%def>
+
+<%def name="play_entry(value, name, longname)">
+    <input type="button" value="&#x25B6;" title="Play now" onclick='${actionJS(value)}'/>
+    ${record(value, name)}
+    ${longname}
+</%def>
+
+<%def name="record(value, name)">
+    <input type="button" class="rotate" value="&#x21af;" title="Record"
+        onclick='${recordJS(value, name)}'/>
+</%def>
+

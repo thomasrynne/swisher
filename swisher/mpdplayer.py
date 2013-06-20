@@ -7,21 +7,20 @@ import time
 import logging
 import traceback
 import cherrypy
+import actions
 
 #Registers stop/pause/.. actions and keeps the mpd status up to date
 #Also exposes the play method for other classes
 class MpdPlayer:
-    def __init__(self, host, port, actions, notify):
+    def __init__(self, host, port, notify):
         self.host = host
         self.port = port
-        self.actions = actions
         self.notify = notify
         self.notification = mpd.MPDClient(use_unicode=True)
         self.notification.timeout = 15
         self.notification.idletimeout = 60
         self.client = mpd.MPDClient(use_unicode=True)
         self.client.timeout = 15
-        self.add_static_actions()
         self.cancel_connect = threading.Event()
 
     def start(self):
@@ -73,11 +72,12 @@ class MpdPlayer:
         self.cancel_connect.set()
         self.notification.noidle()
 
-    def add_static_actions(self):
-        self.actions.registerAction("Stop", "mpd.stop", self.client.stop)
-        self.actions.registerAction("Pause", "mpd.pause", self.client.pause)
-        self.actions.registerAction("Next", "mpd.next", self.client.next)
-        self.actions.registerAction("Previous", "mpd.previous", self.client.previous)
+    def actions(self):
+        return [
+          actions.Action("Stop", "stop", self.client.stop),
+          actions.Action("Pause", "pause", self.client.pause),
+          actions.Action("Next", "next", self.client.next),
+          actions.Action("Previous", "previous", self.client.previous)]
 
     def play_all(self, urlorpaths):
         self.client.stop()

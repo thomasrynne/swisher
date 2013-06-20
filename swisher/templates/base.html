@@ -19,14 +19,14 @@
     <img id="title" src="/assets/logo.png" alt="Swisher"/>
     <div id="controls">
       <span  class="control-name">Card Reader:</span>
-      <input class="button" type="button" title="Cancel Record" value="X" onclick="cancelRecord()"/>
+      <input class="button" type="button" title="Cancel Record / Unlock" value="X" onclick="cancelRecord()"/>
       <span class="control-value" id="reader">&nbsp;</span>
 
       <span  class="control-name">Player:</span>
-      <input class="button" type="button" title="Previous" value="|&#x25C0;" onclick="action('action', 'mpd.previous')"/>
-      <input class="button" type="button" title="Stop"     value="&#x25A0;" onclick="action('action', 'mpd.stop')"/>
-      <input class="button" type="button" title="Pause"    value="||"       onclick="action('action', 'mpd.pause')"/>
-      <input class="button" type="button" title="Next"     value="&#x25B6;|" onclick="action('action', 'mpd.next')"/>
+      <input class="button" type="button" title="Previous" value="|&#x25C0;" onclick="action({'action':'previous'})"/>
+      <input class="button" type="button" title="Stop"     value="&#x25A0;" onclick="action({'action':'stop'})"/>
+      <input class="button" type="button" title="Pause"    value="||"       onclick="action({'action':'pause'})"/>
+      <input class="button" type="button" title="Next"     value="&#x25B6;|" onclick="action({'action':'next'})"/>
       <span class="control-value" id="mpd">&nbsp;</span>
 
       <span class="control-value" id="status"></span>

@@ -19,8 +19,9 @@ def create(config):
     cardsfile = config.get("cards-file", "cards.txt")
     jamendo_clientid = config.get("jamendo-clientid", "")
     jamendo_username = config.get("jamendo-username", "")
-    use_card_service = config.get("use-card-service", "false") == "true"
+    use_card_service = config.get("use-card-service", False)
     log = config.get("log", False)
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     instance = server.Server(current_dir, cardsfile, log, grabdevice, mpdhost, mpdport,
       httpport, jamendo_clientid, jamendo_username, use_card_service)

@@ -1,9 +1,9 @@
-function action(prefix, value) {
-  jQuery.post("/action/invoke", { prefix: prefix, value: value})
+function action(value) {
+  jQuery.post("/action/invoke", { value: JSON.stringify(value) })
 }
 
-function record(prefix, value, name) {
-  jQuery.post("/action/record", { prefix: prefix, value: value, name: name})
+function record(value, name) {
+  jQuery.post("/action/record", { value: JSON.stringify(value), name: name})
 }
 
 function cancelRecord() {
@@ -54,7 +54,7 @@ if (window.location.port != "") {
     hostname = hostname + ":" + window.location.port
 }
 
-var current = { "mpd":"", "player":"" }
+var current = { "reader":"", "mpd":"" }
 reconnectInterval = 1
 longPoll()
 
