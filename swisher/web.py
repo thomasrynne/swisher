@@ -24,7 +24,7 @@ class RootPage:
 
   @cherrypy.expose
   def assets(self, name):
-      return serve_file(os.path.abspath(self.dir + "/assets/" + name))
+      return serve_file(os.path.abspath(os.path.join(self.dir, "assets", name)))
 
 class CardsPage:
   def __init__(self, context, card_store):
@@ -82,7 +82,7 @@ class Web:
     self.dir= dir
     self.logfile = logfile
     self.port = port
-    self.context = WebContext(TemplateLookup(directories=[dir+'/templates']), scripts)
+    self.context = WebContext(TemplateLookup(directories=[os.path.join(dir,'templates')]), scripts)
     self.root = RootPage(dir, self.context)
     for name, page in pages:
         self.context.add_page(name)

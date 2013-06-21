@@ -12,7 +12,7 @@ import threading
 #This implementation uses evdev so the linux kernel needs to
 #support this (most do) and the user must have access to
 # /dev/input/* (this is often achieved by being in the input group)
-class CardReader:
+class LinuxCardReader:
     
     class FileSystemEventHandler(pyinotify.ProcessEvent):
         def __init__(self, reader):

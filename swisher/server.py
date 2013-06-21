@@ -1,7 +1,6 @@
 
 import notifier
 import web
-import cardreader
 import cardmanager
 import cards
 import mpdsource
@@ -11,13 +10,32 @@ import shell
 import cherrypy
 import logging
 import radiosource
-import printer
 import jamendo
+import yaml
+
+def load_config(config_file):
+    try:
+        return yaml.load(file(config_file)) or {}
+    except IOError:
+        return {}
+
+def create(current_dir, config, extra_pages):
+    mpdhost = config.get("mpd-host", "localhost")
+    mpdport = config.get("mpd-port", 6600)
+    httpport = config.get("http-port", 3344)
+    cardsfile = config.get("cards-file", "cards.txt")
+    jamendo_clientid = config.get("jamendo-clientid", "")
+    jamendo_username = config.get("jamendo-username", "")
+    use_card_service = config.get("use-card-service", False)
+    log = config.get("log", False)
+
+    instance = Server(current_dir, cardsfile, log, mpdhost, mpdport,
+      httpport, jamendo_clientid, jamendo_username, use_card_service, extra_pages)
+    return instance
 
 class Server:
-    def __init__(self, resources_path, cardsfile, log, grab_device, mpdhost, mpdport,
-      http_port, jamendo_clientid, jamendo_username, use_cardservice):
-        print("1", use_cardservice)
+    def __init__(self, resources_path, cardsfile, log, mpdhost, mpdport,
+      http_port, jamendo_clientid, jamendo_username, use_cardservice, extra_pages):
         self.notifier = notifier.Notifier()
         self.cardstore = cards.CardStore(cardsfile, use_cardservice)
         self.mpdplayer = mpdplayer.MpdPlayer(mpdhost, mpdport, self.notifier.notify)
@@ -28,7 +46,8 @@ class Server:
         handlers = self.mpdsource.handlers() + [radios.play_radio]
         enrichers = [self.mpdsource.enrich_track]
         pages = []
-
+        pages += extra_pages
+        
         if jamendo_clientid:
             jamapi = jamendo.JamendoApi(jamendo_clientid)
             handler = jamendo.JamendoActionHandler(self.mpdplayer, jamapi)
@@ -45,18 +64,12 @@ class Server:
           enrichers,
           self.mpdplayer.actions() + self.shell.actions())
         self.cardmanager = cardmanager.CardManager(self.cardstore, self.actions, self.notifier.notify)
-        self.cardreader = cardreader.CardReader(
-            grab_device,
-            self.cardmanager.on_card,
-            self.cardmanager.update_devices_count
-        )
 
         pages += [
             ("Cards", lambda c: web.CardsPage(c, self.cardstore)),
             ("Mpd", lambda c: mpdsource.SearchPage(c, self.mpdsource)),
             ("Radio", lambda c: radiosource.RadioPage(c, radios)),
             ("Actions", lambda c: actions.ActionsPage(c, self.actions)),
-            ("CardPrinter", lambda c: printer.CardPrinterPage(c))
         ]
         self.web = web.Web(resources_path, log, http_port, ["box-functions.js"], pages)
         self.web.root.longPoll = web.LongPollStatus(self.notifier)
@@ -65,12 +78,10 @@ class Server:
 
     def start(self):
         self.mpdplayer.start()
-        self.cardreader.start()
         self.web.start()
     def stop(self):
         cherrypy.log("Stopping swisher", severity=logging.INFO)
         self.notifier.stop()
         self.web.stop()
-        self.cardreader.stop()
         self.mpdplayer.stop()
 
