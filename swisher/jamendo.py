@@ -32,7 +32,7 @@ class JamendoActionHandler:
     def enrich_track(self, value):
         (track_name, artist) = (value.get("track_name"), value.get("artist"))
         if track_name and artist:
-            trackids = track_title_artist_search
+            trackids = self.track_title_artist_search(track_name, artist)
             if len(trackids) > 0:
                 return {"jamendo_track": tracks[0]}
         return False
