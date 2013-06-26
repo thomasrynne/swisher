@@ -16,10 +16,10 @@ class RadioSource:
 
     def radios(self):
         for code, value in self._radiourls.items():
-            yield ({"_radio": code}, value[0], value[0])
+            yield ({"swisher_radio": code}, value[0], value[0])
 
     def play_radio(self, value):
-        radio_code = value.get("_radio")
+        radio_code = value.get("swisher_radio")
         if radio_code:
             self._play_radio(radio_code)
         return radio_code
