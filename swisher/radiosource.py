@@ -16,7 +16,7 @@ class RadioSource:
 
     def radios(self):
         for code, value in self._radiourls.items():
-            yield ({"_radio": code}, value[0])
+            yield ({"_radio": code}, value[0], value[0])
 
     def play_radio(self, value):
         radio_code = value.get("_radio")
@@ -45,5 +45,5 @@ class RadioPage:
         self._radio = radio
     @cherrypy.expose
     def index(self):
-        return self._context.render("radio.html","Radio", radios=self._radio.radios())
+        return self._context.render("list.html","Radio", entries=self._radio.radios())
 

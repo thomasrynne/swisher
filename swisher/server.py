@@ -68,6 +68,7 @@ class Server:
         pages += [
             ("Cards", lambda c: web.CardsPage(c, self.cardstore)),
             ("Mpd", lambda c: mpdsource.SearchPage(c, self.mpdsource)),
+            ("Playlists", lambda c: mpdsource.PlaylistPage(c, self.mpdsource)),
             ("Radio", lambda c: radiosource.RadioPage(c, radios)),
             ("Actions", lambda c: actions.ActionsPage(c, self.actions)),
         ]

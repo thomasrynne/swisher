@@ -2,8 +2,8 @@
 <%namespace name="defs" file="defs.html"/>
 
 <div id="list">
-  % for (code, name) in radios:
-    ${defs.play_div(code, name, name)}
+  % for (value, name, longname) in entries:
+    ${defs.play_div(value, name, longname)}
   % endfor %
 </div>
 

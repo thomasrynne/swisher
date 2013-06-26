@@ -60,6 +60,11 @@ class MpdSource:
     def albums(self):
         self._client.albums()
 
+    def playlists(self):
+        for entry in self._client.listplaylists():
+            name = entry["playlist"]
+            yield ( { "_mpd_playlist": name}, name, name )
+
     def _play_track(self, track_url):
         self._client.clear()
         self._client.add(track_url)
@@ -105,7 +110,16 @@ class AlbumAction():
         return self._title + " (" + self._artist + ")"
     def children(self):
         return self._tracks
-	
+
+class PlaylistPage:
+    def __init__(self, context, mpdsourcex):
+        self._context = context
+        self._mpdsource = mpdsourcex
+
+    @cherrypy.expose
+    def index(self):
+        return self._context.render("list.html", "Playlists", entries=self._mpdsource.playlists())
+
 class SearchPage:
     def __init__(self, context, mpdsourcex):
         self._context = context
