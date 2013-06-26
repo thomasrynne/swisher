@@ -3,7 +3,7 @@ import signal
 import yaml
 import argparse
 import server
-import cardreader
+import linuxcardreader
 
 def load_config(config_file):
     try:
@@ -11,7 +11,7 @@ def load_config(config_file):
     except IOError:
         return {}
 
-def create(config):
+def run(config):
     mpdhost = config.get("mpd-host", "localhost")
     mpdport = config.get("mpd-port", 6600)
     httpport = config.get("http-port", 3344)
@@ -23,18 +23,22 @@ def create(config):
     log = config.get("log", False)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    instance = server.Server(current_dir, cardsfile, log, grabdevice, mpdhost, mpdport,
-      httpport, jamendo_clientid, jamendo_username, use_card_service)
+    instance = server.Server(current_dir, cardsfile, log, mpdhost, mpdport,
+      httpport, jamendo_clientid, jamendo_username, use_card_service, [])
+    reader = linuxcardreader.LinuxCardReader(
+        grabdevice,
+        instance.cardmanager.on_card,
+        instance.cardmanager.update_devices_count
+    )
+    instance.start()
+    reader.start()
     def signal_handler(signal, frame):
+        reader.stop()
         instance.stop()	
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-    return instance
-
-def run(config):
-    instance = create(config)
-    instance.start()
     signal.pause()
+    
 
 def main():
     parser = argparse.ArgumentParser(description='RFID mpd client')
