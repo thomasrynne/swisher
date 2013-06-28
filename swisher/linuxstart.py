@@ -9,7 +9,7 @@ import printer
 def run(config):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     extra_pages = [("CardPrinter", lambda c: printer.CardPrinterPage(c))]
-    instance = server.create(current_dir, config, extra_pages)
+    instance = server.createMpdController(current_dir, config, extra_pages)
     grabdevice = config.get("grab-device", "")
     cardreader = linuxcardreader.LinuxCardReader(
         grab_device,

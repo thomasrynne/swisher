@@ -35,9 +35,8 @@ class CardsPage:
     return self.context.render("cards.html", "Cards",
         cards=self.cards_with_name())
   def cards_with_name(self):
-    for number, datetime, value in self.card_store.cards():
-      name = "Unknown"
-      yield (number, datetime, json.dumps(value))
+    for number, value in self.card_store.cards():
+      yield (number, json.dumps(value))
 
 class ActionPage:
   def __init__(self, actions, card_manager):

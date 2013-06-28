@@ -1,0 +1,21 @@
+<%inherit file="base.html"/>
+<%namespace name="defs" file="defs.html"/>
+
+<form id="search">
+  <p>Search by track name</p>
+  <input id="searchbox" type="text" value="${search}" name="search" autofocus="true">
+  <input type="submit" value="Search">
+</form>
+
+% if uri:
+  ${defs.play_div(uri.value, uri.name, uri.longname)}
+% endif
+
+% if tracks:
+<div id="cards">
+<h2>Tracks</h2>
+  % for value, name, longname in tracks:
+    ${defs.play_div(value, name, longname)}
+  % endfor %
+</div>
+% endif
