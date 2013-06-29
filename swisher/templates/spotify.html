@@ -2,8 +2,9 @@
 <%namespace name="defs" file="defs.html"/>
 
 <form id="search">
-  <p>Search by track name</p>
-  <input id="searchbox" type="text" value="${search}" name="search" autofocus="true">
+  <p>Search by track name or enter spotify uri. An example spotify uri is: spotify:track:626WN1uZhuIu6gvDBlvoIs</p>
+  <p>To start at a specific time add #m:ss to the end for example spotify:track:626WN1uZhuIu6gvDBlvoIs#4:20 to start at 4 minutes 20 seconds.</p>
+  <input id="searchbox" type="text" size="50" value="${search}" name="search" autofocus="true">
   <input type="submit" value="Search">
 </form>
 
