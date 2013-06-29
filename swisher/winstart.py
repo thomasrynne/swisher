@@ -1,4 +1,5 @@
 import os.path
+import os
 import server
 import windowscardreader
 import sys
@@ -21,12 +22,12 @@ def run(instance):
     instance.start()
     cardreader.start()
     tray = systray.App('Swisher', instance.swisher_dir() + '\winresources\icon.ico')
-    #def do_settings(a): tray.show_message("A", "BBBBBB")
+    def do_openpage(a): os.startfile("http://localhost:3344")
     def do_exit(a):
         instance.stop()
         cardreader.stop()
     tray.on_quit = do_exit
-    #settings = systray.MenuItem(title='Settings', name='Settings')
-    #settings.onclick = do_settings
-    #tray.add_menuitem(settings)
+    openpage = systray.MenuItem(title='Open webpage', name='Open')
+    openpage.onclick = do_openpage
+    tray.add_menuitem(openpage)
     tray.start()
