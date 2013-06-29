@@ -51,6 +51,10 @@ class SpotifyApi:
         j = json.loads(data)
         connection.close()
         return j
+
+class Entry:
+    def __init__(self):
+        pass
         
 class SpotifySearchPage:
     def __init__(self, context, spotifyapi):
