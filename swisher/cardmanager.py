@@ -87,4 +87,4 @@ class CardManager:
       else:
           if result != True:
                 #store enriched values
-                self.card_store.store(card, result)
+                self.card_store.store(card, {"enrich": result})

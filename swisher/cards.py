@@ -21,8 +21,15 @@ class CardStore:
         number = entry["number"]
         value = entry["value"]
         datetime = entry["datetime"]
-        self._by_card_number[number] = dict(self._by_card_number.get(number,{}), **value)
+        self._add_entry(number, value)
       fh.close()
+
+  def _add_entry(self, number, value):
+    enrich = value.get("enrich")
+    if enrich:
+      self._by_card_number[number] = dict(self._by_card_number.get(number,{}), **value)
+    else:
+      self._by_card_number[number] = value
 
   def store(self, number, value):
     self._local_store(number, value)
@@ -34,7 +41,7 @@ class CardStore:
     fh = open(self._cardsFilename, 'a')
     fh.write(json.dumps({"number": number, "datetime": now, "value":value}) + "\n")
     fh.close()
-    self._by_card_number[number] = dict(self._by_card_number.get(number,{}), **value)
+    self._add_entry(number, value)
 
   def lookup_card(self, card):
     result = self._by_card_number.get(card)
