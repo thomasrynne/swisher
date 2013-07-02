@@ -73,11 +73,21 @@ class MpdPlayer:
         self.notification.noidle()
 
     def actions(self):
+        return self._simple_actions() + self._volume_actions()
+    def _simple_actions(self):
         return [
           actions.Action("Stop", "stop", self.client.stop),
           actions.Action("Pause", "pause", self.client.pause),
           actions.Action("Next", "next", self.client.next),
-          actions.Action("Previous", "previous", self.client.previous)]
+          actions.Action("Previous", "previous", self.client.previous),
+        ]
+
+    def volume_f(self, level):
+        def do_volume():
+            self.client.setvol(str(level))
+        return do_volume
+    def _volume_actions(self):
+        return [actions.Action("Volume " + str(v), "v" + str(v), self.volume_f(v)) for v in range(0,110,10)]
 
     def play_all(self, urlorpaths):
         self.client.stop()
