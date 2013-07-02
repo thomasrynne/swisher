@@ -47,15 +47,13 @@ class MpdSource:
         for song in self._client.search("album", text):
             album = song["album"]
             if album != "":
-                key = (song["artist"], album)
-                if key not in albums:
-                    albums[key] = []
-                albums[key].append(TrackAction(
+                if album not in albums:
+                    albums[album] = []
+                albums[album].append(TrackAction(
                   song["file"], song.get("title", "??"),
                   song.get("artist", ""), song.get("time")))
-        for key, tracks in albums.items():
-            (artist, album) = key
-            yield AlbumAction(artist, album, tracks)
+        for album, tracks in albums.items():
+            yield AlbumAction(album, tracks)
 
     def albums(self):
         self._client.albums()
@@ -72,8 +70,11 @@ class MpdSource:
 
     def _play_album(self, album_key):
         (artist, album) = album_key.split("/")
+        query = ["album", album]
+        if artist != "Compilation":
+            query += ["artist", artist]
         self._client.clear()
-        for song in self._client.find("artist", artist, "album", album):
+        for song in self._client.find(query):
             self._client.add(song["file"])
         self._client.play()
 
@@ -88,6 +89,7 @@ class TrackAction():
         self._track = track
         self._artist = artist
         self._duration = duration
+    def artist(self): return self._artist
     def value(self):
         return { "_mpd_uri": self._url, "track_name": self._track, "artist": self._artist, "duration":self._duration }
     def shortname(self):
@@ -98,16 +100,22 @@ class TrackAction():
         return []
 
 class AlbumAction():
-    def __init__(self, artist, title, tracks):
-        self._artist = artist
+    def __init__(self, title, tracks):
         self._title = title
         self._tracks = tracks
     def value(self):
-        return {"artist": self._artist, "album":self._title, "_mpd_album": self._artist + "/" + self._title}
+        return {"artist": self.artist(), "album":self._title, "_mpd_album": self.artist() + "/" + self._title}
+    def artist(self):
+        artists = set([track.artist() for track in self._tracks])
+        print artists
+        if len(artists) == 1: #perhaps pick the most common artist if < 3?
+            return artists.pop()
+        else:
+            return "Compilation"
     def shortname(self):
         return self._title
     def longname(self):
-        return self._title + " (" + self._artist + ")"
+        return self._title + " [" + self.artist() + "]"
     def children(self):
         return self._tracks
 
