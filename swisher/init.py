@@ -11,20 +11,15 @@ def load_config(config_file):
     except IOError:
         return {}
 
-def run(config):
-    mpdhost = config.get("mpd-host", "localhost")
-    mpdport = config.get("mpd-port", 6600)
-    httpport = config.get("http-port", 3344)
-    grabdevice = config.get("grab-device", "")
-    cardsfile = config.get("cards-file", "cards.txt")
-    jamendo_clientid = config.get("jamendo-clientid", "")
-    jamendo_username = config.get("jamendo-username", "")
-    use_card_service = config.get("use-card-service", False)
-    log = config.get("log", False)
-
+def runMpd(config):
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    instance = server.Server(current_dir, cardsfile, log, mpdhost, mpdport,
-      httpport, jamendo_clientid, jamendo_username, use_card_service, [])
+    grabdevice = config.get("grab-device", "")
+    instance = server.createMpdController(current_dir, config, [])
+    #instance = server.Server(current_dir, cardsfile, log, mpdhost, mpdport,
+    #  httpport, jamendo_clientid, jamendo_username, use_card_service, [])
+    run(instance, grabdevice)
+
+def run(instance, grabdevice):
     reader = linuxcardreader.LinuxCardReader(
         grabdevice,
         instance.cardmanager.on_card,
@@ -79,7 +74,7 @@ def main():
             config["cards-file"] = args.cards_file[0]
         if args.log:
             config["log"] = args.log[0]
-        run(config)
+        runMpd(config)
 
 if __name__ == "__main__":
     main()
