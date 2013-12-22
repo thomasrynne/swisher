@@ -11,16 +11,21 @@ import Queue
 import json
 
 class RootPage:
-  def __init__(self, dir, context):
+  def __init__(self, dir, context, templatefile):
       self.dir = dir
       self._context = context
+      self._templatefile = templatefile
 
   @cherrypy.expose
   def index(self):
-      return self._context.render("index.html","Home")
+      return self._context.render(self._templatefile, "Home")
 
   def add_page(self, name, page):
       setattr(self, name, page)
+
+  @cherrypy.expose
+  def webcontrol(self):
+      cherrypy.log("Handler created: %s" % repr(cherrypy.request.ws_handler))
 
   @cherrypy.expose
   def assets(self, name):
@@ -77,29 +82,31 @@ class WebContext:
         return self._pages
 
 class Web:
-  def __init__(self, dir, logfile, port, scripts, pages):
+  def __init__(self, dir, logfile, port, scripts, templatefile, pages):
     self.dir= dir
     self.logfile = logfile
     self.port = port
     self.context = WebContext(TemplateLookup(directories=[os.path.join(dir,'templates')]), scripts)
-    self.root = RootPage(dir, self.context)
+    self.root = RootPage(dir, self.context, templatefile)
     for name, page in pages:
         self.context.add_page(name)
         self.root.add_page(name.replace(" ", ""), page(self.context))
-
-  def start(self):
-    thread.start_new_thread(self.run, ())
-  def run(self):
-    cherrypy.quickstart(self.root, config={
+    self.config={
         'global': {
           'environment': 'production',
-          'log.screen': not self.logfile,
+          'log.screen': True,#not self.logfile,
           'log.access_file': False,
           'log.error_file': self.logfile,
           'server.socket_host': "0.0.0.0",
           'server.socket_port': self.port,
           'server.thread_pool': 10
         }
-    })
+    }
+
+  def start(self):
+    thread.start_new_thread(self.run, ())
+  def run(self):
+    cherrypy.quickstart(self.root, config=self.config)
   def stop(self):
     cherrypy.engine.exit()
+

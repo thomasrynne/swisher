@@ -1,14 +1,16 @@
 import server
 import winstart
 
-def runMpd():
+def run():
     config = server.load_config("swisher.conf")
     current_dir = winstart.find_current_dir()
-    instance = server.createMpdController(current_dir, config, [])
+    webcontrolx = webcontrol.create_factory(config)
+    mpdplayerx = mpdplayer.create_factory(config)
+    instance = server.create_server(current_dir, config, [mpdplayerx, webcontrolx])
     winstart.run(instance)
 
 def main():
-    runMpd()
+    run()
 
 if __name__ == "__main__":
     main()

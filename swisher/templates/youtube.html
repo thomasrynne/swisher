@@ -1,0 +1,13 @@
+<%inherit file="base.html"/>
+<%namespace name="defs" file="defs.html"/>
+
+<form id="search">
+  <p>Enter a youtube url</p>
+  <input id="searchbox" type="text" size="50" value="" name="search" autofocus="true">
+  <input type="submit" value="Search">
+</form>
+
+% if videoid:
+  <% value = { "youtube_video": videoid} %>
+  ${defs.play_div(value, videoid, videoid)}
+% endif

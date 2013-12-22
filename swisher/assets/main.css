@@ -197,3 +197,10 @@ textarea {
 #cards {
   margin-left: 5em;
 }
+
+#youtube-player-container {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2em;
+  border: solid 2px black;
+}
