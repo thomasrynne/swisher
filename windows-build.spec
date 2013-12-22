@@ -21,7 +21,7 @@ def extra_datas(mydir):
         extra_datas.append((f, f, 'DATA'))
     return extra_datas
 
-a = Analysis(['swisher\windesktop.py'],
+a = Analysis(['swisher\winbox.py'],
     pathex=['swisher'],
     hiddenimports=[],
     hookspath=None)

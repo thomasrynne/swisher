@@ -7,9 +7,24 @@ import actions
 import pytify
 import os
 
+def create_factory(config):
+    def create(notify_function):
+        return SpotifyPlayer()
+    return create
+  
 class SpotifyPlayer:
     def __init__(self):
         self.spotify = pytify.Spotify()
+        self.spotifyapi = SpotifyApi()
+    def pause(self): self.spotify.playpause()
+    def stop(self): self.spotify.stop()
+    def script_files(self): return []
+    def start(self): pass
+    def shutdown(self): pass    
+    def handlers(self): return [self.play_spotify_uri_handler]
+    def actions(self): return []
+    def pages(self): return [("Spotify", lambda c: SpotifySearchPage(c, self.spotifyapi))]
+    def enrichers(self): return []
     def play_spotify_uri_handler(self, value):
         spotifyuri = value.get("spotify_uri")
         if spotifyuri:
@@ -18,14 +33,6 @@ class SpotifyPlayer:
                 self.spotify.next()     # this is needed to make
                 self.spotify.previous() # albums autoplay
         return spotifyuri
-    
-    def handlers(self): return [self.play_spotify_uri_handler]
-    def actions(self):
-        return [
-          actions.Action("Stop", "stop", self.spotify.stop),
-          actions.Action("Pause", "pause", self.spotify.playpause),
-          actions.Action("Next", "next", self.spotify.next),
-          actions.Action("Previous", "previous", self.spotify.previous)]
 
 class SpotifyApi:
     def __init__(self):

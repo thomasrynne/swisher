@@ -66,7 +66,7 @@ class WebSocketConnections:
         self.handlers = {}
         self.active = None
 
-    def handler_builder(self, sock, protocols=None, extensions=None, environ=None):
+    def handler_builder(self, sock, protocols=None, extensions=None, environ=None, heartbeat_freq=None):
         hid = self.sequence
         self.sequence = self.sequence + 1
         return CardReaderHandler(self, hid, sock, protocols, extensions, environ)
