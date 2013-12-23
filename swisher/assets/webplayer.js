@@ -1,5 +1,31 @@
 
 $(document).ready(function() {
+
+  //a bell sound is played as soon as the card is swiped because videos take a while to buffer
+  //without this feedback users don't know if it worked or it's just buffering
+  var bellsound = false
+  soundManager.setup({
+    url: '/assets/soundmanager2.swf',
+    onready: function() {
+      /* from http://www.freesound.org/people/OTBTechno/sounds/152595/ */
+      bellsound = soundManager.createSound({ url: '/assets/bell.wav' })
+    }
+  })
+
+  function playBell() {
+      if (bellsound) { bellsound.play({"loops": 4}) }
+  }
+  function stopBell() {
+      if (bellsound) {
+        //stop sound with some fadeout
+        bellsound.setVolume(50) 
+        setInterval(function() {
+         bellsound.stop()
+         bellsound.setVolume(100)
+        }, 0.3)        
+      }
+  }
+  
   function websocketConnect() {
           websocket = 'ws://' + hostname + '/webcontrol'
           if (window.WebSocket) {
@@ -63,9 +89,11 @@ $(document).ready(function() {
                } else {
                  videoid = value['play_youtube'] 
                  if (current_videoid == videoid) {
+                     playBell()
                      player.tubeplayer("seek", 0)
                      player.tubeplayer("play")
                  } else {
+                     playBell()
                      current_videoid = videoid
                      player.tubeplayer("play", videoid)
                  }
@@ -80,18 +108,13 @@ $(document).ready(function() {
           };
     }
     websocketConnect()
-jQuery("#youtube-player-container").tubeplayer({
+    jQuery("#youtube-player-container").tubeplayer({
 	width: 600, // the width of the player
 	height: 450, // the height of the player
 	allowFullScreen: "true", // true by default, allow user to go full screen
 	initialVideo: "", // the video that is loaded into the player
 	preferredQuality: "default",// preferred quality: default, small, medium, large, hd720
-	onPlay: function(id){}, // after the play method is called
-	onPause: function(){}, // after the pause method is called
-	onStop: function(){}, // after the player is stopped
-	onSeek: function(time){}, // after the video has been seeked to a defined point
-	onMute: function(){}, // after the player is muted
-	onUnMute: function(){} // after the player is unmuted
+	onPlayerPlaying: function() { stopBell() }
+    })
 });
-        });
 

@@ -1,5 +1,5 @@
 import cherrypy
-
+import time
 from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
 from ws4py.websocket import WebSocket
 from ws4py.messaging import TextMessage
@@ -18,7 +18,8 @@ class WebControl:
     def handlers(self): return [ self.play_youtube_handler ]
     def actions(self): return []
     def enrichers(self): return []
-    def script_files(self): return ["jQuery.tubeplayer.min.js", "webplayer.js"]
+    def script_files(self):
+        return ["jQuery.tubeplayer.min.js", "soundmanager2-nodebug-jsmin.js", "webplayer.js"]
     def pages(self): return [("YouTube", lambda c: YouTubeSearchPage(c))]
     def start(self): pass
     def shutdown(self): pass
@@ -74,6 +75,7 @@ class WebSocketConnections:
         self.handlers[handler.handler_id] = handler
         if len(self.handlers) == 1:
             self.active = handler
+            time.sleep(0.1) #without this the new browser window doesn't become active
             self.active.hello()
         self.pingAll()
 
