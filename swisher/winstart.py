@@ -14,7 +14,7 @@ def find_current_dir():
         return os.path.dirname(__file__)
 
         
-def run(instance):
+def run(instance, stops):
     cardreader = windowscardreader.WindowsCardReader(
         instance.cardmanager.on_card,
         instance.cardmanager.update_devices_count
@@ -24,6 +24,7 @@ def run(instance):
     tray = systray.App('Swisher', instance.swisher_dir() + '\winresources\icon.ico')
     def do_openpage(a): os.startfile("http://localhost:3344")
     def do_exit(a):
+        for s in stops: s.stop()
         instance.stop()
         cardreader.stop()
     tray.on_quit = do_exit

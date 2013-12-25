@@ -29,6 +29,7 @@ a = Analysis(['swisher\winbox.py'],
 a.datas += extra_datas('swisher\\templates')
 a.datas += extra_datas('swisher\\assets')
 a.datas += extra_datas('swisher\\winresources')
+a.datas += extra_datas('mpd-0.17.4-win32')
 
 pyz = PYZ(a.pure)
 exe = EXE(pyz,

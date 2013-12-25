@@ -10,7 +10,7 @@ import cherrypy
 import actions
 
 def create_factory(config): 
-    mpdhost = config.get("mpd-host", "localhost")
+    mpdhost = config.get("mpd-host", "127.0.0.1")
     mpdport = config.get("mpd-port", 6600)
     #jamendo_clientid = config.get("jamendo-clientid", "")
     #jamendo_username = config.get("jamendo-username", "")
@@ -35,12 +35,11 @@ class MpdPlayer:
     def script_files(self): return ["box-functions.js"]
     def pages(self):
         return [
-          ("Mpd", lambda c: SearchPage(c, self)),
+          ("Files", lambda c: SearchPage(c, self)),
           ("Playlists", lambda c: PlaylistPage(c, self)),
         ]
 
     def start(self):
-        print "START" + self.host
         self.cancel_connect.clear()
         def _current_status():
             song = self.notification.currentsong()
@@ -88,7 +87,10 @@ class MpdPlayer:
 
     def shutdown(self):
         self.cancel_connect.set()
-        self.notification.noidle()
+        try:
+            self.notification.noidle()
+        except:
+            pass
 
     def stop(self): self.client.next()
     def pause(self): self.client.pause()
@@ -97,6 +99,8 @@ class MpdPlayer:
         return [
           actions.Action("Next", "next", self.client.next),
           actions.Action("Previous", "previous", self.client.previous),
+          actions.Action("Update", "update", self.client.update),
+          actions.Action("Rescan", "rescan", self.client.rescan),
         ]
     def enrichers(self): return [ self.enrich_track ]
 
