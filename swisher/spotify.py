@@ -8,9 +8,9 @@ import pytify
 import os
 
 def create_factory(config):
-    def create(notify_function):
+    def create_spotify(notify_function):
         return SpotifyPlayer()
-    return create
+    return create_spotify
   
 class SpotifyPlayer:
     def __init__(self):

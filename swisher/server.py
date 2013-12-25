@@ -37,7 +37,12 @@ def create_server(current_dir, config, player_factories):
     log = config.get("log", False)
 
     notifierx = notifier.Notifier()
-    players = [p(notifierx.notify) for p in player_factories]
+    players = []
+    for factory in player_factories:
+        try:
+            players += [factory(notifierx.notify)]
+        except:
+            print "Not starting player: " + str(factory)
     return Server(
       current_dir, cardsfile, log, httpport, notifierx,
       use_card_service, players)
@@ -62,8 +67,7 @@ class Server:
         script_files = []
         for p in players: script_files += p.script_files()
         self.web = web.Web(resources_path, log, http_port, script_files, "webplayer.html", pages)
-        #hack
-        webcontrolx = players[1]
+        webcontrolx = players[0] #hack to get the web control player as this depends on websockets setup here
         WebSocketPlugin(cherrypy.engine).subscribe()
         cherrypy.tools.websocket = WebSocketTool()
         self.web.config.update({'/webcontrol': {
