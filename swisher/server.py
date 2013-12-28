@@ -64,7 +64,7 @@ class Server:
             ("Actions", lambda c: actions.ActionsPage(c, self.actions)),
         ]
 
-        script_files = []
+        script_files = ["box-functions.js"]
         for p in players: script_files += p.script_files()
         self.web = web.Web(resources_path, log, http_port, script_files, "webplayer.html", pages)
         webcontrolx = players[0] #hack to get the web control player as this depends on websockets setup here

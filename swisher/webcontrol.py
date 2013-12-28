@@ -24,6 +24,8 @@ class WebControl:
     def start(self): pass
     def shutdown(self): pass
     def stop(self): self.connections.send_to_active({"action": "stop"})
+    def next(self): pass
+    def previous(self): pass
     def pause(self):
         print "Sending pause"
         self.connections.send_to_active({"action": "pause"})
@@ -73,11 +75,11 @@ class WebSocketConnections:
 
     def add(self, handler):
         self.handlers[handler.handler_id] = handler
+        self.pingAll()
+        time.sleep(0.1) #without this the new browser window doesn't become active
         if len(self.handlers) == 1:
             self.active = handler
-            time.sleep(0.1) #without this the new browser window doesn't become active
             self.active.hello()
-        self.pingAll()
 
     def remove(self, handler):
         del self.handlers[handler.handler_id]

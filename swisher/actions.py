@@ -23,6 +23,8 @@ class Actions():
             self._actions_by_code[a.code] = a.f
         self._actions_by_code["stop"] = self._stop
         self._actions_by_code["pause"] = self._pause
+        self._actions_by_code["next"] = self._next
+        self._actions_by_code["previous"] = self._previous
         self._current_player = None
 
     def invoke(self, value):
@@ -56,6 +58,16 @@ class Actions():
             self._current_player.pause()
         else:
             for p in self._players: p.pause()
+    def _next(self):
+        if self._current_player:
+            self._current_player.next()
+        else:
+            for p in self._players: p.next()
+    def _previous(self):
+        if self._current_player:
+            self._current_player.previous()
+        else:
+            for p in self._players: p.previous()
 
     def _attempt_play(self, player, value):
         for h in player.handlers():

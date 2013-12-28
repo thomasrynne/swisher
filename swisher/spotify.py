@@ -18,6 +18,8 @@ class SpotifyPlayer:
         self.spotifyapi = SpotifyApi()
     def pause(self): self.spotify.playpause()
     def stop(self): self.spotify.stop()
+    def next(self): pass
+    def previous(self): pass
     def script_files(self): return []
     def start(self): pass
     def shutdown(self): pass    

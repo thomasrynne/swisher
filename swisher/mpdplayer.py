@@ -32,7 +32,7 @@ class MpdPlayer:
         self.client.timeout = 15
         self.cancel_connect = threading.Event()
 
-    def script_files(self): return ["box-functions.js"]
+    def script_files(self): return []
     def pages(self):
         return [
           ("Files", lambda c: SearchPage(c, self)),
@@ -94,11 +94,11 @@ class MpdPlayer:
 
     def stop(self): self.client.next()
     def pause(self): self.client.pause()
+    def next(self): self.client.next()
+    def previous(self): self.client.previous()
 
     def actions(self):
         return [
-          actions.Action("Next", "next", self.client.next),
-          actions.Action("Previous", "previous", self.client.previous),
           actions.Action("Update", "update", self.client.update),
           actions.Action("Rescan", "rescan", self.client.rescan),
         ]
@@ -178,7 +178,7 @@ class MpdPlayer:
         if artist != "Compilation":
             query += ["artist", artist]
         self.client.clear()
-        for song in self.client.find(query):
+        for song in self.client.find(*query):
             self.client.add(song["file"])
         self.client.play()
 

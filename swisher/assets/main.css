@@ -30,6 +30,7 @@ body {
   text-align: center;
   clear: both;
 }
+h2 { margin-left: 6em; }
 #search {
   margin-top: 2em;
   margin-left: auto;

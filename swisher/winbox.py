@@ -4,6 +4,7 @@ import webcontrol
 import mpdplayer
 import mpdserver
 import spotify
+import itunesplayer
 import sys
 import os.path
 
@@ -14,13 +15,14 @@ def run():
     sys.stdout = log
     sys.stderr = log    
     webcontrolx = webcontrol.create_factory(config)
-    mpdplayerx = mpdplayer.create_factory(config)
+    #mpdplayerx = mpdplayer.create_factory(config)
     spotifyx = spotify.create_factory(config)
-    players = [webcontrolx, mpdplayerx, spotifyx]
-    mpdserverx = mpdserver.MpdServer(current_dir)
-    mpdserverx.start()
+    itunesx = itunesplayer.create_factory(config)
+    players = [webcontrolx, spotifyx, itunesx] #mpdplayerx
+    #mpdserverx = mpdserver.MpdServer(current_dir)
+    #mpdserverx.start()
     instance = server.create_server(current_dir, config, players)
-    winstart.run(instance, [mpdserverx])
+    winstart.run(instance, []) #[mpdserverx]
 
 def main():
     run()

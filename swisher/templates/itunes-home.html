@@ -1,0 +1,27 @@
+<%inherit file="base.html"/>
+<%namespace name="defs" file="defs.html"/>
+
+<form id="search">
+  <p>Track search</p>
+  <input id="searchbox" type="text" value="" name="search" autofocus="true">
+  <input type="submit" value="Search">
+</form>
+
+<h2>Selected tracks</h2>
+<div id="searchresults">
+  <div id="list">
+% for item in selected:
+  <div>
+    ${defs.play_div(item.value(), item.shortname(), item.longname())}
+  </div>
+% endfor
+</div>
+<h2>Playlists</h2>
+<div id="searchresults">
+  <div id="list">
+% for item in playlists:
+  <div>
+    ${defs.play_div(item.value(), item.shortname(), item.longname())}
+  </div>
+% endfor
+</div>
